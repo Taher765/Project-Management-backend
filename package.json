@@ -1,0 +1,21 @@
+{
+  "name": "worker-management-multi-project",
+  "version": "2.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node --watch src/server.js",
+    "start": "node src/server.js",
+    "seed:test": "node src/seedTestData.js",
+    "seed:auth": "node src/seedAuthUser.js",
+    "migrate:workers-projects": "node src/migrateWorkersPerProject.js",
+    "seed:august": "node src/seedAugustWeeks.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.6.1",
+    "express": "^5.1.0",
+    "mongoose": "^8.18.0",
+    "xlsx": "^0.18.5"
+  }
+}
