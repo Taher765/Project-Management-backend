@@ -58,11 +58,14 @@
 - `PATCH /api/workers/:id/wage`
 - `POST /api/workers/:id/assignments` — إضافة العامل لمشروع آخر أو فترة جديدة.
 - `PATCH /api/workers/:id/assignment/end` — إنهاء فترة العمل في المشروع.
-- `DELETE /api/workers/:id?weekStart=YYYY-MM-DD` — حذف العامل من أسبوع محدد فقط.
+- `DELETE /api/workers/:id?weekStart=YYYY-MM-DD` — حذف العامل من أسبوع محدد فقط ويمكن استعادته.
+- `DELETE /api/workers/:id/permanent` — حذف العامل نهائيًا من المشروع مع كل أسابيعه ومعاملاته وارتباطاته، ولا يمكن استعادته.
 - `PATCH /api/workers/:id/restore?weekStart=YYYY-MM-DD`
 - `PATCH /api/workers/:id/attendance`
 - `POST /api/workers/:id/transactions`
 - `GET /api/workers/:id/transactions`
+
+**ملاحظة العمليات:** `POST /api/workers/:id/transactions` يقبل أي تاريخ غير مستقبلي طالما أن أسبوع ذلك التاريخ موجود في قاعدة البيانات، حتى لو كان الأسبوع مغلقًا. لذلك يمكن إضافة عملية بتاريخ قديم مثل 2026-08-15 أثناء وجود المستخدم في سبتمبر، وستظهر وتتحسب في أرشيف أغسطس.
 
 ### Weeks / Archive
 - `GET /api/home`
@@ -180,3 +183,11 @@ Then seed August through the current week:
 ### معرف الأسبوع
 استجابات الأسبوع وHome تحتوي الآن على `data.week.id`، ويمكن استخدامه مباشرة في:
 `PATCH /api/weeks/:id/close`
+
+
+### إضافات خاصة بالنسخة الحالية
+- Response الأسبوع يحافظ على كل الحقول القديمة ويضيف `days[].presentWorkers`، وهو عدد العمال الحاضرين في كل يوم.
+- Response صفحة العامل يحافظ على الهيكل القديم ويضيف `attendance.week` و`attendance.month` و`attendance.project` لعدد أيام الحضور والغياب.
+- تعديل اسم العامل يقبل `name` كما كان، مع توافق إضافي مع `newName` و`workerName` لمنع نجاح الطلب بدون تغيير الاسم عند اختلاف اسم الحقل في الواجهة.
+- إضافة معاملة العامل تقبل تاريخًا قديمًا غير مستقبلي طالما أن الأسبوع الخاص بذلك التاريخ موجود في قاعدة البيانات؛ لذلك يمكن إضافة عملية بتاريخ في أغسطس أثناء وجود المستخدم في سبتمبر، وتدخل تلقائيًا في أرشيف أغسطس.
+- صفحة العامل الشهرية تقبل `month/year` كما هي، أو `date=YYYY-MM-DD` لاختيار الشهر من تاريخ.

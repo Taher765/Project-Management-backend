@@ -22,7 +22,18 @@ export async function serializeHome(week) {
   }, { weekGross: 0, weekDeductions: 0, weekNet: 0, weekOvertime: 0, weekTotalEarned: 0, presentDays: 0, absentDays: 0 });
   return {
     week: { id: week._id, startDate: week.weekStart, endDate: week.weekEnd, closed: week.closed, projectId: week.projectId },
-    days: days(week.weekStart).map(d => ({ date: d, dayName: dayNameArabic(d) })),
+    days: days(week.weekStart).map(d => {
+      const presentWorkers = rows.reduce(
+        (count, row) => count + (row.days.some(day => day.date === d && day.attended) ? 1 : 0),
+        0
+      );
+
+      return {
+        date: d,
+        dayName: dayNameArabic(d),
+        presentWorkers
+      };
+    }),
     workers: rows,
     summary
   };
